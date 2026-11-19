@@ -1,0 +1,484 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Public workspace preferences and institutional display metadata for an authenticated EduTrack user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "institutionalId": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "department": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "semester": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "activePortalView": { "type": "string", "enum": ["student", "faculty", "admin"] },
+        "themeMode": { "type": "string", "enum": ["light", "dark"] },
+        "interfaceDensity": { "type": "string", "enum": ["standard", "compact"] },
+        "notifyAssignments": { "type": "boolean" },
+        "notifyAttendance": { "type": "boolean" },
+        "notifyExams": { "type": "boolean" },
+        "notifyBroadcasts": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "uid",
+        "displayName",
+        "institutionalId",
+        "department",
+        "semester",
+        "activePortalView",
+        "themeMode",
+        "interfaceDensity",
+        "notifyAssignments",
+        "notifyAttendance",
+        "notifyExams",
+        "notifyBroadcasts",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "UserPrivateInfo": {
+      "title": "UserPrivateInfo",
+      "description": "Isolated PII record for an authenticated user (email, phone, residential address, DOB).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "email": { "type": "string", "minLength": 3, "maxLength": 160 },
+        "phone": { "type": "string", "minLength": 3, "maxLength": 40 },
+        "address": { "type": "string", "minLength": 1, "maxLength": 240 },
+        "dob": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "phone", "address", "dob", "updatedAt"]
+    },
+    "Assignment": {
+      "title": "Assignment",
+      "description": "Academic assignment task belonging to a course.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "code": { "type": "string", "minLength": 2, "maxLength": 30 },
+        "title": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "description": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "courseCode": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "courseName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "facultyName": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "targetSection": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "dueDate": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "dueWindow": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "maxMarks": { "type": "number" },
+        "status": { "type": "string", "enum": ["Pending", "In Progress", "Submitted", "Graded", "Active", "Extended", "Closed"] },
+        "progressPct": { "type": "number" },
+        "submissionCount": { "type": "number" },
+        "totalStudents": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "code",
+        "title",
+        "description",
+        "courseCode",
+        "courseName",
+        "facultyName",
+        "targetSection",
+        "dueDate",
+        "dueWindow",
+        "maxMarks",
+        "status",
+        "progressPct",
+        "submissionCount",
+        "totalStudents",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "Student coursework submission and faculty grading ledger entry.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "assignmentId": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "assignmentTitle": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "courseCode": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "studentName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "studentRoll": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "fileName": { "type": "string", "minLength": 1, "maxLength": 180 },
+        "fileSize": { "type": "string", "minLength": 1, "maxLength": 30 },
+        "notes": { "type": "string", "maxLength": 600 },
+        "marks": { "type": "number" },
+        "maxMarks": { "type": "number" },
+        "feedback": { "type": "string", "maxLength": 400 },
+        "grade": { "type": "string", "maxLength": 20 },
+        "status": { "type": "string", "enum": ["On-Time", "Pending Review", "Late", "Graded", "Submitted"] },
+        "submittedAtLabel": { "type": "string", "minLength": 1, "maxLength": 60 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "assignmentId",
+        "assignmentTitle",
+        "courseCode",
+        "studentName",
+        "studentRoll",
+        "fileName",
+        "fileSize",
+        "notes",
+        "marks",
+        "maxMarks",
+        "feedback",
+        "grade",
+        "status",
+        "submittedAtLabel",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AttendanceRecord": {
+      "title": "AttendanceRecord",
+      "description": "Individual class session attendance record.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "date": { "type": "string", "minLength": 4, "maxLength": 40 },
+        "dayLabel": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "timeSlot": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "courseCode": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "courseTitle": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "room": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "faculty": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "status": { "type": "string", "enum": ["Present", "Absent", "Leave/OD", "Holiday"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "date",
+        "dayLabel",
+        "timeSlot",
+        "courseCode",
+        "courseTitle",
+        "room",
+        "faculty",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "LeaveRequest": {
+      "title": "LeaveRequest",
+      "description": "Student authorized leave or on-duty (OD) application.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "courseCode": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "leaveType": { "type": "string", "enum": ["Medical Waiver", "On-Duty (Hackathon/Event)", "Academic Leave"] },
+        "fromDate": { "type": "string", "minLength": 4, "maxLength": 30 },
+        "toDate": { "type": "string", "minLength": 4, "maxLength": 30 },
+        "reason": { "type": "string", "minLength": 3, "maxLength": 400 },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "courseCode",
+        "leaveType",
+        "fromDate",
+        "toDate",
+        "reason",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "GradeRecord": {
+      "title": "GradeRecord",
+      "description": "Subject academic result and assessment breakdown.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "semester": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "examType": { "type": "string", "enum": ["Semester V Final", "Model Examination", "Internal Assessment"] },
+        "courseCode": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "courseName": { "type": "string", "minLength": 2, "maxLength": 140 },
+        "credits": { "type": "number" },
+        "maxMarks": { "type": "number" },
+        "score": { "type": "number" },
+        "classAvg": { "type": "number" },
+        "grade": { "type": "string", "minLength": 1, "maxLength": 10 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "semester",
+        "examType",
+        "courseCode",
+        "courseName",
+        "credits",
+        "maxMarks",
+        "score",
+        "classAvg",
+        "grade",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StudyMaterial": {
+      "title": "StudyMaterial",
+      "description": "Course lecture notes, slides, lab code, and question bank entry.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "courseCode": { "type": "string", "minLength": 2, "maxLength": 24 },
+        "courseName": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "title": { "type": "string", "minLength": 2, "maxLength": 180 },
+        "topic": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "facultyName": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "fileType": { "type": "string", "enum": ["PDF Notes", "PPT Slides", "Lab Code", "Q-Banks"] },
+        "categoryTag": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "badgeTag": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "fileSize": { "type": "string", "minLength": 1, "maxLength": 30 },
+        "isCached": { "type": "boolean" },
+        "isRead": { "type": "boolean" },
+        "updatedLabel": { "type": "string", "minLength": 1, "maxLength": 40 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "courseCode",
+        "courseName",
+        "title",
+        "topic",
+        "facultyName",
+        "fileType",
+        "categoryTag",
+        "badgeTag",
+        "fileSize",
+        "isCached",
+        "isRead",
+        "updatedLabel",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Announcement": {
+      "title": "Announcement",
+      "description": "Institutional notice, examination circular, or campus event bulletin.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "category": { "type": "string", "enum": ["Important", "Academic", "Examination", "Events"] },
+        "badgeLabel": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "department": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "title": { "type": "string", "minLength": 2, "maxLength": 180 },
+        "summary": { "type": "string", "minLength": 4, "maxLength": 600 },
+        "author": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "dateLabel": { "type": "string", "minLength": 2, "maxLength": 50 },
+        "attachmentLabel": { "type": "string", "maxLength": 60 },
+        "isUnread": { "type": "boolean" },
+        "isBookmarked": { "type": "boolean" },
+        "isHighPriority": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "category",
+        "badgeLabel",
+        "department",
+        "title",
+        "summary",
+        "author",
+        "dateLabel",
+        "attachmentLabel",
+        "isUnread",
+        "isBookmarked",
+        "isHighPriority",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CalendarEvent": {
+      "title": "CalendarEvent",
+      "description": "Academic calendar examination, deadline, workshop, or holiday event.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "title": { "type": "string", "minLength": 2, "maxLength": 160 },
+        "courseCode": { "type": "string", "minLength": 1, "maxLength": 30 },
+        "category": { "type": "string", "enum": ["Academic Events", "Assignments", "Holidays", "Examinations"] },
+        "dateStr": { "type": "string", "minLength": 8, "maxLength": 20 },
+        "timeRange": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "location": { "type": "string", "minLength": 1, "maxLength": 100 },
+        "description": { "type": "string", "maxLength": 400 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "title",
+        "courseCode",
+        "category",
+        "dateStr",
+        "timeRange",
+        "location",
+        "description",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StudentRegistry": {
+      "title": "StudentRegistry",
+      "description": "Admin directory entry for enrolled students.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "registerNo": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "department": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "specialization": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "yearSem": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "email": { "type": "string", "minLength": 3, "maxLength": 140 },
+        "phone": { "type": "string", "minLength": 3, "maxLength": 40 },
+        "admittedTerm": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "attendancePct": { "type": "number" },
+        "status": { "type": "string", "enum": ["Active", "On Leave", "Probation"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "name",
+        "registerNo",
+        "department",
+        "specialization",
+        "yearSem",
+        "email",
+        "phone",
+        "admittedTerm",
+        "attendancePct",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "StaffRegistry": {
+      "title": "StaffRegistry",
+      "description": "Admin directory entry for faculty and institutional staff.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "name": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "staffId": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "department": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "designation": { "type": "string", "minLength": 2, "maxLength": 100 },
+        "email": { "type": "string", "minLength": 3, "maxLength": 140 },
+        "phone": { "type": "string", "minLength": 3, "maxLength": 40 },
+        "coursesCount": { "type": "number" },
+        "weeklyHours": { "type": "number" },
+        "status": { "type": "string", "enum": ["Active", "Sabbatical", "Inactive"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "name",
+        "staffId",
+        "department",
+        "designation",
+        "email",
+        "phone",
+        "coursesCount",
+        "weeklyHours",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "AiThread": {
+      "title": "AiThread",
+      "description": "Saved AI Study Companion conversation thread.",
+      "type": "object",
+      "properties": {
+        "ownerUid": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "title": { "type": "string", "minLength": 1, "maxLength": 140 },
+        "courseCode": { "type": "string", "minLength": 1, "maxLength": 30 },
+        "subtitle": { "type": "string", "maxLength": 180 },
+        "timeLabel": { "type": "string", "maxLength": 40 },
+        "messages": { "type": "array" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "ownerUid",
+        "title",
+        "courseCode",
+        "subtitle",
+        "timeLabel",
+        "messages",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Public workspace preferences per user UID."
+    },
+    "/users/{userId}/private/{docId}": {
+      "schema": { "$ref": "#/entities/UserPrivateInfo" },
+      "description": "Isolated PII document per user UID."
+    },
+    "/assignments/{assignmentId}": {
+      "schema": { "$ref": "#/entities/Assignment" },
+      "description": "Course assignments owned by the authenticated workspace."
+    },
+    "/submissions/{submissionId}": {
+      "schema": { "$ref": "#/entities/Submission" },
+      "description": "Assignment submissions and grading ledger records."
+    },
+    "/attendance/{recordId}": {
+      "schema": { "$ref": "#/entities/AttendanceRecord" },
+      "description": "Attendance ledger records."
+    },
+    "/leaveRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/LeaveRequest" },
+      "description": "Student leave and on-duty applications."
+    },
+    "/grades/{gradeId}": {
+      "schema": { "$ref": "#/entities/GradeRecord" },
+      "description": "Academic performance and semester marks."
+    },
+    "/materials/{materialId}": {
+      "schema": { "$ref": "#/entities/StudyMaterial" },
+      "description": "Course study materials and repository files."
+    },
+    "/announcements/{announcementId}": {
+      "schema": { "$ref": "#/entities/Announcement" },
+      "description": "Institutional notices and circulars."
+    },
+    "/calendarEvents/{eventId}": {
+      "schema": { "$ref": "#/entities/CalendarEvent" },
+      "description": "Academic calendar events and deadlines."
+    },
+    "/students/{studentId}": {
+      "schema": { "$ref": "#/entities/StudentRegistry" },
+      "description": "Admin student registry records."
+    },
+    "/staff/{staffId}": {
+      "schema": { "$ref": "#/entities/StaffRegistry" },
+      "description": "Admin faculty and staff directory records."
+    },
+    "/aiThreads/{threadId}": {
+      "schema": { "$ref": "#/entities/AiThread" },
+      "description": "AI Study Companion conversation history."
+    }
+  }
+}

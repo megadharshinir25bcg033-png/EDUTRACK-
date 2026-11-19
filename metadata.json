@@ -1,0 +1,6 @@
+{
+  "name": "EduTrack AI",
+  "description": "Smart Academic Ecosystem with Student, Faculty, and Admin portals, Supabase integration, and Gemini AI Study Companion.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
