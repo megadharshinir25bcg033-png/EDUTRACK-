@@ -1,4 +1,4 @@
-import { EduTrackDatabase } from '../types/edutrack.ts';
+import type { EduTrackDatabase } from '../types/edutrack.js';
 
 export const ADMIN_AVATAR_URL =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuC0-lTzwP50fB4hw3VMrW2TBvzGui1I-_xr-nFd-5hhqv14NTRm7KQf-2jZmHp9KhtqxEW_UFMI5daVcQOWJhLwtephHkkSt-vvPSuYR5WpPiuAttU9NefK7PplVNo3L97e6pGXO8IDGzY6ZPAm5QAHPf__Si0XBJUsapq8bvf5QVxFg3F8sDYt8LK0Z36YbzW0kU82Oc87r_skf7TgKMdh5qUM6ogqIIHZH8bxcw';

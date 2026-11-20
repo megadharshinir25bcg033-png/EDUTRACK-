@@ -1,10 +1,13 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import fs from 'fs';
 import path from 'path';
-import { createInitialDatabase } from '../src/data/seedData.ts';
-import { EduTrackDatabase } from '../src/types/edutrack.ts';
+import { createInitialDatabase } from '../src/data/seedData.js';
+import type { EduTrackDatabase } from '../src/types/edutrack.js';
 
-const DATA_DIR = path.resolve(process.cwd(), '.data');
+// Vercel functions have a read-only filesystem except /tmp.
+const DATA_DIR = process.env.VERCEL
+  ? path.join('/tmp', '.data')
+  : path.resolve(process.cwd(), '.data');
 const DATA_FILE = path.join(DATA_DIR, 'edutrack-db.json');
 
 let supabaseClient: SupabaseClient | null = null;
