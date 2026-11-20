@@ -232,7 +232,12 @@ async function startServer() {
       db.assignments[idx] = updated;
 
       // Add to faculty submissions ledger if not present
-      const existingSub = db.submissions.find((s) => s.assignmentId === id && s.studentCode === 'STU-2024-8841');
+      const studentCode = db.profiles.student.institutionalId;
+
+      const existingSub = db.submissions.find(
+        (s) => s.assignmentId === id && s.studentCode === studentCode
+      );
+
       if (!existingSub) {
         const subId = `sub-${Date.now()}`;
         const subRecord = {
@@ -241,7 +246,7 @@ async function startServer() {
           assignmentTitle: updated.title,
           courseCode: updated.courseCode,
           studentName: db.profiles.student.displayTitle,
-          studentCode: db.profiles.student.institutionalId,
+          studentCode: studentCode,
           initials: 'AM',
           fileName: updated.submittedFile || 'submission_final.pdf',
           submittedAt: 'Just now',
@@ -252,33 +257,59 @@ async function startServer() {
           grade: 'Pending',
           published: false,
         };
+
         db.submissions.unshift(subRecord);
+      }
+
+      // Sync the new or existing submission to Supabase
+      const submissionToSync = db.submissions.find(
+        (s) => s.assignmentId === id && s.studentCode === studentCode
+      );
+
+      if (submissionToSync) {
         await syncRowToSupabase('submissions', {
-          id: subRecord.id,
-          assignment_id: subRecord.assignmentId,
-          assignment_title: subRecord.assignmentTitle,
-          course_code: subRecord.courseCode,
-          student_name: subRecord.studentName,
-          student_code: subRecord.studentCode,
-          initials: subRecord.initials,
-          file_name: subRecord.fileName,
-          submitted_at: subRecord.submittedAt,
-          submission_state: subRecord.submissionState,
-          marks: subRecord.marks,
-          max_marks: subRecord.maxMarks,
-          feedback: subRecord.feedback,
-          grade: subRecord.grade,
-          published: subRecord.published,
+          id: submissionToSync.id,
+          assignment_id: submissionToSync.assignmentId,
+          assignment_title: submissionToSync.assignmentTitle,
+          course_code: submissionToSync.courseCode,
+          student_name: submissionToSync.studentName,
+          student_code: submissionToSync.studentCode,
+          initials: submissionToSync.initials,
+          file_name: submissionToSync.fileName,
+          submitted_at: submissionToSync.submittedAt,
+          submission_state: submissionToSync.submissionState,
+          marks: submissionToSync.marks,
+          max_marks: submissionToSync.maxMarks,
+          feedback: submissionToSync.feedback,
+          grade: submissionToSync.grade,
+          published: submissionToSync.published,
+          updated_at: new Date().toISOString(),
         });
       }
+
 
       await saveDatabase(db);
       await syncRowToSupabase('assignments', {
         id: updated.id,
+        code: updated.code,
+        title: updated.title,
+        description: updated.description,
+        course_code: updated.courseCode,
+        course_title: updated.courseTitle,
+        faculty_name: updated.facultyName,
+        target_section: updated.targetSection,
+        due_date: updated.dueDate,
+        due_window: updated.dueWindow,
+        time_left: updated.timeLeft,
+        max_marks: updated.maxMarks,
         status: updated.status,
         progress: updated.progress,
+        is_critical: updated.isCritical,
         submitted_file: updated.submittedFile,
         submitted_at: updated.submittedAt,
+        marks_obtained: updated.marksObtained,
+        grade: updated.grade,
+        feedback: updated.feedback,
       });
 
       res.json(updated);
@@ -334,11 +365,23 @@ async function startServer() {
       await saveDatabase(db);
       await syncRowToSupabase('submissions', {
         id: updated.id,
+        assignment_id: updated.assignmentId,
+        assignment_title: updated.assignmentTitle,
+        course_code: updated.courseCode,
+        student_name: updated.studentName,
+        student_code: updated.studentCode,
+        initials: updated.initials,
+        file_name: updated.fileName,
+        submitted_at: updated.submittedAt,
+        submission_state: updated.submissionState,
         marks: updated.marks,
+        max_marks: updated.maxMarks,
         feedback: updated.feedback,
         grade: updated.grade,
         published: updated.published,
+        updated_at: new Date().toISOString(),
       });
+
 
       res.json(updated);
     } catch (err) {

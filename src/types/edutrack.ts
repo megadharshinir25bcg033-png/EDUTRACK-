@@ -106,6 +106,7 @@ export interface CourseEligibility {
 
 export interface LeaveRequest {
   id: string;
+  studentId?: string;
   leaveType: string;
   fromDate: string;
   toDate: string;

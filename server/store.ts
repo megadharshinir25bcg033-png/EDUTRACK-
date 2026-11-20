@@ -72,6 +72,9 @@ export async function loadDatabase(): Promise<EduTrackDatabase> {
         materialsRes,
         studentsRes,
         staffRes,
+        attendanceRes,
+        leaveRes,
+        examResultsRes,
       ] = await Promise.all([
         supabase.from('profiles').select('*'),
         supabase.from('assignments').select('*'),
@@ -80,14 +83,21 @@ export async function loadDatabase(): Promise<EduTrackDatabase> {
         supabase.from('study_materials').select('*'),
         supabase.from('student_registry').select('*'),
         supabase.from('staff_registry').select('*'),
+        supabase.from('attendance').select('*'),
+        supabase.from('leave_requests').select('*'),
+        supabase.from('exam_results').select('*'),
       ]);
 
       if (!profilesRes.error && profilesRes.data && profilesRes.data.length > 0) {
+
         for (const row of profilesRes.data) {
           const role = row.role as 'student' | 'faculty' | 'admin';
+
           if (memoryDb.profiles[role]) {
             memoryDb.profiles[role] = {
               ...memoryDb.profiles[role],
+              id: row.id ?? memoryDb.profiles[role].id,
+              role: role,
               institutionalId: row.institutional_id ?? memoryDb.profiles[role].institutionalId,
               fullName: row.full_name ?? memoryDb.profiles[role].fullName,
               displayTitle: row.display_title ?? memoryDb.profiles[role].displayTitle,
@@ -95,13 +105,28 @@ export async function loadDatabase(): Promise<EduTrackDatabase> {
               recoveryEmail: row.recovery_email ?? memoryDb.profiles[role].recoveryEmail,
               phone: row.phone ?? memoryDb.profiles[role].phone,
               altPhone: row.alt_phone ?? memoryDb.profiles[role].altPhone,
+              department: row.department ?? memoryDb.profiles[role].department,
+              division: row.division ?? memoryDb.profiles[role].division,
+              designation: row.designation ?? memoryDb.profiles[role].designation,
+              semester: row.semester ?? memoryDb.profiles[role].semester,
+              section: row.section ?? memoryDb.profiles[role].section,
+              cgpa: row.cgpa ?? memoryDb.profiles[role].cgpa,
+              dob: row.dob ?? memoryDb.profiles[role].dob,
+              gender: row.gender ?? memoryDb.profiles[role].gender,
               officeLocation: row.office_location ?? memoryDb.profiles[role].officeLocation,
               officeHours: row.office_hours ?? memoryDb.profiles[role].officeHours,
               emergencyContact: row.emergency_contact ?? memoryDb.profiles[role].emergencyContact,
+              address: row.address ?? memoryDb.profiles[role].address,
+              avatarUrl: row.avatar_url ?? memoryDb.profiles[role].avatarUrl,
+              username: row.username ?? memoryDb.profiles[role].username,
+              clearanceLevel: row.clearance_level ?? memoryDb.profiles[role].clearanceLevel,
+              tenure: row.tenure ?? memoryDb.profiles[role].tenure,
+              twoFactor: row.twoFactor ?? memoryDb.profiles[role].twoFactor,
               settings: row.settings ?? memoryDb.profiles[role].settings,
             };
           }
         }
+
       }
 
       if (!assignmentsRes.error && assignmentsRes.data && assignmentsRes.data.length > 0) {
@@ -216,6 +241,48 @@ export async function loadDatabase(): Promise<EduTrackDatabase> {
           status: r.status,
         }));
       }
+
+      if (!attendanceRes.error && attendanceRes.data && attendanceRes.data.length > 0) {
+        memoryDb.attendanceRecords = attendanceRes.data.map((r) => ({
+          id: r.id,
+          sessionDate: r.session_date,
+          dayNum: Number(r.date_number),
+          timeSlot: r.time_slot,
+          courseCode: r.course_code,
+          courseTitle: r.course_title,
+          room: r.room,
+          facultyName: r.faculty_name,
+          status: r.status,
+        }));
+      }
+
+      if (!leaveRes.error && leaveRes.data && leaveRes.data.length > 0) {
+        memoryDb.leaveRequests = leaveRes.data.map((r) => ({
+          id: r.id,
+          studentId: r.student_id,
+          leaveType: r.leave_type,
+          fromDate: r.from_date,
+          toDate: r.to_date,
+          reason: r.reason,
+          status: r.status,
+          createdAt: r.created_at,
+        }));
+      }
+
+      if (!examResultsRes.error && examResultsRes.data && examResultsRes.data.length > 0) {
+        memoryDb.examResults = examResultsRes.data.map((r) => ({
+          id: r.id,
+          examType: r.exam_type,
+          courseCode: r.course_code,
+          courseTitle: r.course_title,
+          credits: Number(r.credits),
+          maxMarks: Number(r.max_marks),
+          score: Number(r.score),
+          grade: r.grade,
+          classAvg: Number(r.class_average),
+          isTop: Boolean(r.is_top),
+        }));
+      }
     } catch (err) {
       console.warn('Supabase sync skipped, serving local store:', err);
     }
@@ -229,22 +296,41 @@ export async function saveDatabase(db: EduTrackDatabase): Promise<void> {
   writeLocalStore(db);
 }
 
+
 export async function syncRowToSupabase(
   table: string,
   row: Record<string, unknown>,
   conflictColumn = 'id'
 ): Promise<void> {
   const supabase = getSupabaseClient();
-  if (!supabase) return;
+
+  if (!supabase) {
+    console.error(
+      `Supabase client unavailable. Check SUPABASE_URL and Supabase key in .env. Table: ${table}`
+    );
+    return;
+  }
+
   try {
-    const { error } = await supabase.from(table).upsert(row, { onConflict: conflictColumn });
+    const { error } = await supabase
+      .from(table)
+      .upsert(row, { onConflict: conflictColumn });
+
     if (error) {
-      console.warn(`Supabase upsert warning (${table}):`, error.message);
+      console.error(`Supabase upsert failed (${table}):`, {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+      });
+    } else {
+      console.log(`Supabase upsert successful: ${table}, ID: ${row.id}`);
     }
   } catch (err) {
-    console.warn(`Supabase upsert error (${table}):`, err);
+    console.error(`Supabase upsert exception (${table}):`, err);
   }
 }
+
 
 export async function deleteRowFromSupabase(table: string, id: string): Promise<void> {
   const supabase = getSupabaseClient();
