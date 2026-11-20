@@ -47,7 +47,7 @@ function computeGrade(marks: number, maxMarks: number): string {
   return `C (${pct}%)`;
 }
 
-async function startServer() {
+export async function createApp() {
   const app = express();
   app.use(express.json({ limit: '4mb' }));
 
@@ -824,9 +824,12 @@ Provide clear, structured, accurate academic explanations. Keep responses concis
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`EduTrack AI server listening on http://0.0.0.0:${PORT}`);
-  });
+  return app;
 }
-
-startServer();
+if (process.env.VERCEL !== '1') {
+  createApp().then((app) => {
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`EduTrack AI server listening on http://0.0.0.0:${PORT}`);
+    });
+  }).catch(console.error);
+}
